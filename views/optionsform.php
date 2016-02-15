@@ -115,6 +115,11 @@ $options = Admin::fetch_options( $teccc );
 			<label> <input name="teccc_options[color_widgets]" type="checkbox" value="1" <?php checked( '1', $options['color_widgets'], true ) ?> /> <?php esc_html_e( 'Add Category Colors to widgets', 'the-events-calendar-category-colors' ) ?> </label>
 		</div>
 
+	<div class="teccc_options_col1"><?php esc_html_e( 'Inline CSS', 'the-events-calendar-category-colors' ) ?></div>
+	<div class="teccc_options_col2">
+		<label><input name="teccc_options[inline_css]" type="checkbox" value="1" <?php checked( '1', $options['inline_css'], true ) ?> /> <?php esc_html_e( 'Use Inline CSS', 'the-events-calendar-category-colors' ) ?></label>
+	</div>
+
 	<div class="teccc_options_col1"> <?php esc_html_e( 'Database Options', 'the-events-calendar-category-colors' ) ?> </div>
 		<div class="teccc_options_col2">
 			<label> <input name="teccc_options[chk_default_options_db]" type="checkbox" value="1" <?php checked( '1', $options['chk_default_options_db'], true ) ?> /> <?php esc_html_e( 'Restore defaults upon plugin deactivation/reactivation', 'the-events-calendar-category-colors' ) ?> </label>

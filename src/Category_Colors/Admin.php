@@ -169,6 +169,7 @@ class Admin {
 			'legend_superpowers',
 			'color_widgets',
 			'show_ignored_cats_legend',
+			'inline_css',
 		);
 
 		foreach ( $generalOptions as $optionkey ) {

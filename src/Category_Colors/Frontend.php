@@ -20,6 +20,8 @@ class Frontend {
 	protected $legendFilterHasRun = false;
 	protected $legendExtraView    = array();
 
+	protected $inline_css_added = false;
+
 	public function __construct( Main $teccc ) {
 		$this->teccc   = $teccc;
 		$this->options = Admin::fetch_options( $teccc );
@@ -28,6 +30,16 @@ class Frontend {
 
 		add_action( 'init', array( $this, 'add_colored_categories' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_scripts_styles' ), ( PHP_INT_MAX - 100 ) );
+
+		/*
+		 * Add CSS for AJAX reloads on inline CSS.
+		 */
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX &&
+		     isset( $this->options['inline_css'] ) && $this->options['inline_css']
+		) {
+			$this->add_css();
+		}
+
 	}
 
 	/**
@@ -57,13 +69,15 @@ class Frontend {
 		$found_types      = array_intersect( $event_types, $requested_types );
 
 		if ( ! empty( $found_types ) ) {
-			wp_enqueue_style( 'teccc_stylesheet' );
+			//wp_enqueue_style( 'teccc_stylesheet' );
+			$this->add_css();
 		}
 
 		// If the color widgets setting is enabled we also need to enqueue styles
 		// This also enqueues styles all the time
 		if ( isset( $this->options['color_widgets'] ) && '1' === $this->options['color_widgets'] ) {
-			wp_enqueue_style( 'teccc_stylesheet' );
+			//wp_enqueue_style( 'teccc_stylesheet' );
+			$this->add_css();
 		}
 
 		// Optionally add legend superpowers
@@ -73,6 +87,32 @@ class Frontend {
 		) {
 			wp_enqueue_script( 'legend_superpowers', TECCC_RESOURCES . '/legend-superpowers.js', array( 'jquery' ), Main::$version, true );
 		}
+	}
+
+	/**
+	 * Logic to add CSS as stylesheet or inline.
+	 */
+	public function add_css() {
+		if ( isset( $this->options['inline_css'] ) && '1' === $this->options['inline_css'] ) {
+			add_action( 'tribe_events_after_header', array( $this, 'echo_css' ) );
+			add_action( 'tribe_events_list_widget_after_the_event_title', array( $this, 'echo_css' ) );
+		} else {
+			wp_enqueue_style( 'teccc_stylesheet' );
+		}
+	}
+
+	/**
+	 * Echo the generated CSS in style tags only once per page.
+	 *
+	 * @return bool
+	 */
+	public function echo_css() {
+		if ( $this->inline_css_added ) {
+			return false;
+		}
+		$inline_css = '<style type="text/css">' . $this->generate_css() . '</style>';
+		echo $inline_css;
+		$this->inline_css_added = true;
 	}
 
 	/**
